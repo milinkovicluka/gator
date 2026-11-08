@@ -61,15 +61,20 @@ FROM posts
 INNER JOIN feed_follows ON feed_follows.feed_id = posts.feed_id
 INNER JOIN feeds ON feeds.id = posts.feed_id
 WHERE feed_follows.user_id = $1
-ORDER BY posts.published_at DESC NULLS LAST
-LIMIT $2
-OFFSET $3
+  AND feeds.name ILIKE '%' || $2::text || '%'
+ORDER BY
+  CASE WHEN $3::text = 'oldest' THEN posts.published_at END ASC NULLS LAST,
+  CASE WHEN $3::text <> 'oldest' THEN posts.published_at END DESC NULLS LAST
+LIMIT $5
+OFFSET $4
 `
 
 type GetPostsForUserParams struct {
-	UserID uuid.UUID
-	Limit  int32
-	Offset int32
+	UserID    uuid.UUID
+	FeedName  string
+	SortOrder string
+	Offset    int32
+	Limit     int32
 }
 
 type GetPostsForUserRow struct {
@@ -85,7 +90,13 @@ type GetPostsForUserRow struct {
 }
 
 func (q *Queries) GetPostsForUser(ctx context.Context, arg GetPostsForUserParams) ([]GetPostsForUserRow, error) {
-	rows, err := q.db.QueryContext(ctx, getPostsForUser, arg.UserID, arg.Limit, arg.Offset)
+	rows, err := q.db.QueryContext(ctx, getPostsForUser,
+		arg.UserID,
+		arg.FeedName,
+		arg.SortOrder,
+		arg.Offset,
+		arg.Limit,
+	)
 	if err != nil {
 		return nil, err
 	}

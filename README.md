@@ -94,7 +94,7 @@ gator <command> [args...]
 | Command | Description |
 | --- | --- |
 | `gator agg <interval>` | Fetch feeds in a loop, one feed per interval (e.g. `30s`, `1m`). Stop it with Ctrl+C |
-| `gator browse [limit] [--page N]` | Show the newest posts from feeds you follow (default 2 per page) |
+| `gator browse [limit] [--page N] [--sort newest\|oldest] [--feed NAME]` | Show posts from feeds you follow (default 2 per page). `--feed` matches part of a feed name, ignoring case |
 
 `agg` is meant to run in the background. Start it in one terminal, then use
 `browse` in another. Please use a sensible interval so you don't flood the sites
