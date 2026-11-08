@@ -10,4 +10,5 @@ INNER JOIN feed_follows ON feed_follows.feed_id = posts.feed_id
 INNER JOIN feeds ON feeds.id = posts.feed_id
 WHERE feed_follows.user_id = $1
 ORDER BY posts.published_at DESC NULLS LAST
-LIMIT $2;
+LIMIT $2
+OFFSET $3;
