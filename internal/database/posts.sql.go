@@ -127,3 +127,79 @@ func (q *Queries) GetPostsForUser(ctx context.Context, arg GetPostsForUserParams
 	}
 	return items, nil
 }
+
+const searchPostsForUser = `-- name: SearchPostsForUser :many
+SELECT posts.id, posts.created_at, posts.updated_at, posts.title, posts.url, posts.description, posts.published_at, posts.feed_id, feeds.name AS feed_name
+FROM posts
+INNER JOIN feed_follows ON feed_follows.feed_id = posts.feed_id
+INNER JOIN feeds ON feeds.id = posts.feed_id
+WHERE feed_follows.user_id = $1
+  AND (
+    posts.title ILIKE '%' || $2::text || '%'
+    OR posts.description ILIKE '%' || $2::text || '%'
+    OR word_similarity($2::text, posts.title) >= 0.5
+  )
+ORDER BY
+  (posts.title ILIKE '%' || $2::text || '%') DESC,
+  word_similarity($2::text, posts.title) DESC,
+  posts.published_at DESC NULLS LAST
+LIMIT $4
+OFFSET $3
+`
+
+type SearchPostsForUserParams struct {
+	UserID uuid.UUID
+	Query  string
+	Offset int32
+	Limit  int32
+}
+
+type SearchPostsForUserRow struct {
+	ID          uuid.UUID
+	CreatedAt   time.Time
+	UpdatedAt   time.Time
+	Title       string
+	Url         string
+	Description sql.NullString
+	PublishedAt sql.NullTime
+	FeedID      uuid.UUID
+	FeedName    string
+}
+
+func (q *Queries) SearchPostsForUser(ctx context.Context, arg SearchPostsForUserParams) ([]SearchPostsForUserRow, error) {
+	rows, err := q.db.QueryContext(ctx, searchPostsForUser,
+		arg.UserID,
+		arg.Query,
+		arg.Offset,
+		arg.Limit,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []SearchPostsForUserRow
+	for rows.Next() {
+		var i SearchPostsForUserRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.Title,
+			&i.Url,
+			&i.Description,
+			&i.PublishedAt,
+			&i.FeedID,
+			&i.FeedName,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
