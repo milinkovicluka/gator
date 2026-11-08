@@ -1,4 +1,4 @@
-module github.com/lukamilinkovic/gator
+module github.com/milinkovicluka/gator
 
 go 1.27.3
 

@@ -19,7 +19,7 @@ You'll need these installed:
 ## Installation
 
 ```bash
-go install github.com/lukamilinkovic/gator@latest
+go install github.com/milinkovicluka/gator@latest
 ```
 
 This builds a statically compiled `gator` binary and puts it in `$(go env GOPATH)/bin`.
@@ -47,7 +47,7 @@ postgres://username:password@localhost:5432/gator
 The migrations live in `sql/schema` in this repo:
 
 ```bash
-git clone https://github.com/lukamilinkovic/gator.git
+git clone https://github.com/milinkovicluka/gator.git
 cd gator/sql/schema
 goose postgres "postgres://username:password@localhost:5432/gator" up
 ```
