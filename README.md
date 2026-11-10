@@ -4,6 +4,8 @@ Gator is a multi-user command-line RSS feed aggregator written in Go. It lets yo
 add RSS feeds, follow feeds added by other users, collect posts in the background,
 and browse the latest posts right in your terminal.
 
+> 📖 Day-to-day commands: see [EVERYDAY_USE.md](EVERYDAY_USE.md)
+
 ## Requirements
 
 You'll need these installed:
