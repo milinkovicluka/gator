@@ -55,6 +55,27 @@ func (q *Queries) CreatePost(ctx context.Context, arg CreatePostParams) (Post, e
 	return i, err
 }
 
+const getPostByURL = `-- name: GetPostByURL :one
+SELECT id, created_at, updated_at, title, url, description, published_at, feed_id FROM posts
+WHERE url = $1
+`
+
+func (q *Queries) GetPostByURL(ctx context.Context, url string) (Post, error) {
+	row := q.db.QueryRowContext(ctx, getPostByURL, url)
+	var i Post
+	err := row.Scan(
+		&i.ID,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.Title,
+		&i.Url,
+		&i.Description,
+		&i.PublishedAt,
+		&i.FeedID,
+	)
+	return i, err
+}
+
 const getPostsForUser = `-- name: GetPostsForUser :many
 SELECT posts.id, posts.created_at, posts.updated_at, posts.title, posts.url, posts.description, posts.published_at, posts.feed_id, feeds.name AS feed_name
 FROM posts

@@ -34,3 +34,7 @@ ORDER BY
   posts.published_at DESC NULLS LAST
 LIMIT sqlc.arg('limit')
 OFFSET sqlc.arg('offset');
+
+-- name: GetPostByURL :one
+SELECT * FROM posts
+WHERE url = $1;
