@@ -16,3 +16,9 @@ WHERE bookmarks.user_id = sqlc.arg(user_id)
 ORDER BY bookmarks.created_at DESC
 LIMIT sqlc.arg('limit')
 OFFSET sqlc.arg('offset');
+
+
+
+-- name: GetBookmarkedPostIDs :many
+SELECT post_id FROM bookmarks
+WHERE user_id = $1;
