@@ -30,3 +30,16 @@ RETURNING *;
 SELECT * FROM feeds
 ORDER BY last_fetched_at ASC NULLS FIRST
 LIMIT 1;
+
+
+-- name: GetNextFeedsToFetch :many
+UPDATE feeds
+SET last_fetched_at = NOW(),
+    updated_at = NOW()
+WHERE id IN (
+    SELECT id FROM feeds
+    ORDER BY last_fetched_at ASC NULLS FIRST
+    LIMIT $1
+    FOR UPDATE SKIP LOCKED
+)
+RETURNING *;

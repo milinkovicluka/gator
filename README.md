@@ -95,7 +95,7 @@ gator <command> [args...]
 
 | Command | Description |
 | --- | --- |
-| `gator agg <interval>` | Fetch feeds in a loop, one feed per interval (e.g. `30s`, `1m`). Stop it with Ctrl+C |
+| `gator agg <interval> [--feeds N]` | Fetch feeds in a loop: up to N feeds at the same time (default 3) every interval (min `1s`). Stop with Ctrl+C |
 | `gator browse [limit] [--page N] [--sort newest\|oldest] [--feed NAME]` | Show posts from feeds you follow (default 2 per page). `--feed` matches part of a feed name, ignoring case |
 | `gator search <words> [--limit N] [--page N]` | Search posts from feeds you follow; handles small typos (default 5 per page) |
 
