@@ -52,6 +52,7 @@ func main() {
 	cmds.register("unbookmark", middlewareLoggedIn(handlerUnbookmark))
 	cmds.register("bookmarks", middlewareLoggedIn(handlerListBookmarks))
 	cmds.register("read", middlewareLoggedIn(handlerRead))
+	cmds.register("service", handlerService)
 
 	if len(os.Args) < 2 {
 		log.Fatal("Usage: cli <command> [args...]")

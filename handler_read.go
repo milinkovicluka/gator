@@ -269,9 +269,12 @@ func (m readModel) renderPost() string {
 	if item.bookmarked {
 		title = "★ " + title
 	}
-	b.WriteString(body.Inherit(titleStyle).Render(title) + "\n")
-	b.WriteString(metaStyle.Render(p.FeedName+" · "+formatPostDate(p)) + "\n\n")
-	b.WriteString(linkStyle.Render(p.Url) + "\n\n")
+	b.WriteString(body.Inherit(titleStyle).Render(title))
+	b.WriteString("\n")
+	b.WriteString(metaStyle.Render(p.FeedName + " · " + formatPostDate(p)))
+	b.WriteString("\n\n")
+	b.WriteString(linkStyle.Render(p.Url))
+	b.WriteString("\n\n")
 
 	text := ""
 	if p.Description.Valid {

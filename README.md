@@ -99,6 +99,9 @@ gator <command> [args...]
 | `gator browse [limit] [--page N] [--sort newest\|oldest] [--feed NAME]` | Show posts from feeds you follow (default 2 per page). `--feed` matches part of a feed name, ignoring case |
 | `gator search <words> [--limit N] [--page N]` | Search posts from feeds you follow; handles small typos (default 5 per page) |
 | `gator read [--bookmarks] [--limit N]` | Interactive reader: arrows to move, `enter` to read, `/` to filter, `o` to open in browser, `b` to bookmark, `q` to quit |
+| `gator service start [--interval 1m] [--feeds 3]` | Run `agg` in the background and restart it if it crashes |
+| `gator service status` / `stop` / `restart` | Check, stop or restart the background service |
+| `gator service logs [--lines N] [-f]` | Show the service log (`-f` to follow it live) |
 
 `agg` is meant to run in the background. Start it in one terminal, then use
 `browse` in another. Please use a sensible interval so you don't flood the sites
