@@ -17,3 +17,14 @@ DELETE FROM users;
 
 -- name: GetUsers :many
 SELECT * FROM users;
+
+
+-- name: SetUserAPIKeyHash :exec
+UPDATE users
+SET api_key_hash = $2,
+    updated_at = NOW()
+WHERE id = $1;
+
+-- name: GetUserByAPIKeyHash :one
+SELECT * FROM users
+WHERE api_key_hash = $1;

@@ -102,6 +102,8 @@ gator <command> [args...]
 | `gator service start [--interval 1m] [--feeds 3]` | Run `agg` in the background and restart it if it crashes |
 | `gator service status` / `stop` / `restart` | Check, stop or restart the background service |
 | `gator service logs [--lines N] [-f]` | Show the service log (`-f` to follow it live) |
+| `gator apikey` | Create (or replace) your API key for the HTTP API |
+| `gator serve [--addr 127.0.0.1:8080]` | Run the JSON HTTP API. Send `Authorization: Bearer <key>`; endpoints under `/v1/` |
 
 `agg` is meant to run in the background. Start it in one terminal, then use
 `browse` in another. Please use a sensible interval so you don't flood the sites

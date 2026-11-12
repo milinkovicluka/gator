@@ -7,6 +7,7 @@ package database
 
 import (
 	"context"
+	"database/sql"
 	"time"
 
 	"github.com/google/uuid"
@@ -20,7 +21,7 @@ VALUES (
     $3,
     $4
 )
-RETURNING id, created_at, updated_at, name
+RETURNING id, created_at, updated_at, name, api_key_hash
 `
 
 type CreateUserParams struct {
@@ -43,6 +44,7 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, e
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.Name,
+		&i.ApiKeyHash,
 	)
 	return i, err
 }
@@ -57,7 +59,7 @@ func (q *Queries) DeleteUsers(ctx context.Context) error {
 }
 
 const getUser = `-- name: GetUser :one
-SELECT id, created_at, updated_at, name FROM users
+SELECT id, created_at, updated_at, name, api_key_hash FROM users
 WHERE name = $1
 `
 
@@ -69,12 +71,31 @@ func (q *Queries) GetUser(ctx context.Context, name string) (User, error) {
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.Name,
+		&i.ApiKeyHash,
+	)
+	return i, err
+}
+
+const getUserByAPIKeyHash = `-- name: GetUserByAPIKeyHash :one
+SELECT id, created_at, updated_at, name, api_key_hash FROM users
+WHERE api_key_hash = $1
+`
+
+func (q *Queries) GetUserByAPIKeyHash(ctx context.Context, apiKeyHash sql.NullString) (User, error) {
+	row := q.db.QueryRowContext(ctx, getUserByAPIKeyHash, apiKeyHash)
+	var i User
+	err := row.Scan(
+		&i.ID,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.Name,
+		&i.ApiKeyHash,
 	)
 	return i, err
 }
 
 const getUsers = `-- name: GetUsers :many
-SELECT id, created_at, updated_at, name FROM users
+SELECT id, created_at, updated_at, name, api_key_hash FROM users
 `
 
 func (q *Queries) GetUsers(ctx context.Context) ([]User, error) {
@@ -91,6 +112,7 @@ func (q *Queries) GetUsers(ctx context.Context) ([]User, error) {
 			&i.CreatedAt,
 			&i.UpdatedAt,
 			&i.Name,
+			&i.ApiKeyHash,
 		); err != nil {
 			return nil, err
 		}
@@ -103,4 +125,21 @@ func (q *Queries) GetUsers(ctx context.Context) ([]User, error) {
 		return nil, err
 	}
 	return items, nil
+}
+
+const setUserAPIKeyHash = `-- name: SetUserAPIKeyHash :exec
+UPDATE users
+SET api_key_hash = $2,
+    updated_at = NOW()
+WHERE id = $1
+`
+
+type SetUserAPIKeyHashParams struct {
+	ID         uuid.UUID
+	ApiKeyHash sql.NullString
+}
+
+func (q *Queries) SetUserAPIKeyHash(ctx context.Context, arg SetUserAPIKeyHashParams) error {
+	_, err := q.db.ExecContext(ctx, setUserAPIKeyHash, arg.ID, arg.ApiKeyHash)
+	return err
 }
